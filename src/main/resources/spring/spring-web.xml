@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-4.3.xsd
+      http://www.springframework.org/schema/aop
+      http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+      http://www.springframework.org/schema/tx
+      http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 注解扫描位置 -->
+	<context:component-scan base-package="org.dreamtech.o2o.web" />
+	<!-- 开启注解 -->
+	<mvc:annotation-driven />
+	<!-- 放行静态资源 -->
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+	<mvc:default-servlet-handler />
+	<!-- 视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/html/" />
+		<property name="suffix" value=".html" />
+	</bean>
+	<!-- 文件上传解析器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="maxUploadSize" value="20971520"></property>
+		<property name="maxInMemorySize" value="20971520"></property>
+	</bean>
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<!-- 店家管理系统的拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/shopadmin/**" />
+			<bean id="ShopInterceptor"
+				class="org.dreamtech.o2o.interceptor.shopadmin.ShopLoginInterceptor" />
+		</mvc:interceptor>
+		<!-- 店铺操作权限的拦截器 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/shopadmin/**" />
+			<mvc:exclude-mapping path="/shopadmin/shoplist" />
+			<mvc:exclude-mapping path="/shopadmin/getshoplist" />
+			<mvc:exclude-mapping path="/shopadmin/getshopinitinfo" />
+			<mvc:exclude-mapping path="/shopadmin/registershop" />
+			<mvc:exclude-mapping path="/shopadmin/shopoperation" />
+			<mvc:exclude-mapping path="/shopadmin/shopmanagement" />
+			<mvc:exclude-mapping path="/shopadmin/getshopmanagementinfo" />
+			<bean id="ShopPermissionInterceptor"
+				class="org.dreamtech.o2o.interceptor.shopadmin.ShopPermissionInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+</beans>

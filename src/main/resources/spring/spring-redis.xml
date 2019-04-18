@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- Redis连接池的设置 -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.pool.maxActive}" />
+		<property name="maxIdle" value="${redis.pool.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.pool.maxWait}" />
+		<property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
+	</bean>
+	<!-- 创建和配置Redis连接池 -->
+	<bean id="jedisWritePool" class="org.dreamtech.o2o.cache.JedisPoolWriper"
+		depends-on="jedisPoolConfig">
+		<constructor-arg index="0" ref="jedisPoolConfig" />
+		<constructor-arg index="1" value="${redis.hostname}" />
+		<constructor-arg index="2" value="${redis.port}" type="int" />
+	</bean>
+	<!-- 创建和封装Redis工具类 -->
+	<bean id="jedisUtil" class="org.dreamtech.o2o.cache.JedisUtil"
+		scope="singleton">
+		<property name="jedisPool">
+			<ref bean="jedisWritePool" />
+		</property>
+	</bean>
+	<!-- Redis的key操作 -->
+	<bean id="jedisKeys" class="org.dreamtech.o2o.cache.JedisUtil$Keys"
+		scope="singleton">
+		<constructor-arg ref="jedisUtil" />
+	</bean>
+	<!-- Redis的Strings操作 -->
+	<bean id="jedisStrings" class="org.dreamtech.o2o.cache.JedisUtil$Strings"
+		scope="singleton">
+		<constructor-arg ref="jedisUtil" />
+	</bean>
+	<!-- Redis的Lists操作 -->
+	<bean id="jedisLists" class="org.dreamtech.o2o.cache.JedisUtil$Lists"
+		scope="singleton">
+		<constructor-arg ref="jedisUtil" />
+	</bean>
+	<!-- Redis的Sets操作 -->
+	<bean id="jedisSets" class="org.dreamtech.o2o.cache.JedisUtil$Sets"
+		scope="singleton">
+		<constructor-arg ref="jedisUtil" />
+	</bean>
+	<!-- Redis的HashMap操作 -->
+	<bean id="jedisHash" class="org.dreamtech.o2o.cache.JedisUtil$Hash"
+		scope="singleton">
+		<constructor-arg ref="jedisUtil" />
+	</bean>
+</beans>    

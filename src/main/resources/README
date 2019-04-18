@@ -1,0 +1,4 @@
+jdbc.properties-->数据库配置文件
+mybatis-config.xml-->Mybatis配置文件
+redis.properties-->Redis数据库配置文件
+watermark.jpg-->图片处理模块添加的水印
